@@ -2,9 +2,9 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <style>
         body {
@@ -20,33 +20,81 @@
 
 <body>
     <script src="js/three.js"></script>
+    <script src="js/OrbitControls.js"></script>
     <script>
         var scene = new THREE.Scene();
-        var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        var camera = new THREE.PerspectiveCamera(
+            75,
+            window.innerWidth / window.innerHeight,
+            0.1,
+            1000
+        );
 
         var renderer = new THREE.WebGLRenderer();
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        window.addEventListener('resize', function() {
+        // chnge setup when window resize
+        window.addEventListener("resize", function() {
             var width = window.innerWidth;
             var height = window.innerHeight;
-            renderer.setSize(width, height)
+            renderer.setSize(width, height);
             camera.aspect = width / height;
             camera.updateProjectionMatrix();
-        })
+        });
 
+        // adding orbit controls
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
 
         // create the shape
         var geometry = new THREE.BoxGeometry(1, 1, 1);
-        var material = new THREE.MeshBasicMaterial({
-            color: 0x00ff00,
-            wireframe: false
-        });
-        var cube = new THREE.Mesh(geometry, material);
+        var cubeMaterials = [
+            new THREE.MeshLambertMaterial({
+                map: new THREE.TextureLoader().load("images/a.avif"),
+                side: THREE.DoubleSide,
+            }), //RIght
+            new THREE.MeshPhongMaterial({
+                map: new THREE.TextureLoader().load("images/a.avif"),
+                side: THREE.DoubleSide,
+            }), // left
+            new THREE.MeshLambertMaterial({
+                map: new THREE.TextureLoader().load("images/a.avif"),
+                side: THREE.DoubleSide,
+            }), // top
+            new THREE.MeshPhongMaterial({
+                map: new THREE.TextureLoader().load("images/a.avif"),
+                side: THREE.DoubleSide,
+            }), //bottom
+            new THREE.MeshLambertMaterial({
+                map: new THREE.TextureLoader().load("images/a.avif"),
+                side: THREE.DoubleSide,
+            }), //front
+            new THREE.MeshBasicMaterial({
+                map: new THREE.TextureLoader().load("images/a.avif"),
+                side: THREE.DoubleSide,
+            }), //back
+        ];
+
+        // var material = new THREE.MeshBasicMaterial({
+        //     color: 0x00ff00,
+        //     wireframe: false
+        // });
+
+        var cube = new THREE.Mesh(geometry, cubeMaterials);
         scene.add(cube);
 
         camera.position.z = 3;
+
+
+        // Adding lights
+        var ambientLight = new THREE.AmbientLight(0xFFFFFF, 1.5);
+        scene.add(ambientLight)
+
+        var pointLight = new THREE.PointLight(0xFF0000, 10, 500)
+        scene.add(pointLight)
+
+        // var pointLight = new THREE.PointLight(0xFF0000, 4, 50)
+        // scene.add(pointLight)
 
         const geometry1 = new THREE.SphereGeometry(1.5, 100, 1);
         const wireframe = new THREE.WireframeGeometry(geometry1);
@@ -56,23 +104,28 @@
         line.material.transparent = true;
         scene.add(line);
 
-
         // game logic
         var update = function() {
             cube.rotation.x += 0.02;
             cube.rotation.z += 0.005;
             line.rotation.x += 0.01;
             line.rotation.z += 0.005;
-        }
+
+            var time = Date.now() * 0.0005;
+            pointLight.position.x = Math.sin(time * 0.7) * 30;
+            pointLight.position.y = Math.cos(time * 0.5) * 40;
+            pointLight.position.z = Math.cos(time * 0.3) * 30;
+
+        };
 
         var render = function() {
             renderer.render(scene, camera);
-        }
+        };
         var GameLoop = function() {
             requestAnimationFrame(GameLoop);
             update();
             render();
-        }
+        };
         GameLoop();
     </script>
 </body>
