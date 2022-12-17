@@ -32,22 +32,31 @@
         var geometry = new THREE.BoxGeometry(1, 1, 1);
         var material = new THREE.MeshBasicMaterial({
             color: 0x00ff00,
-            wireframe: true
+            wireframe: false
         });
         var cube = new THREE.Mesh(geometry, material);
         scene.add(cube);
 
         camera.position.z = 3;
-        console.log(camera.position.z);
+
+        const geometry1 = new THREE.SphereGeometry(1.5, 100, 1);
+        const wireframe = new THREE.WireframeGeometry(geometry1);
+        const line = new THREE.LineSegments(wireframe);
+        line.material.depthTest = false;
+        line.material.opacity = 0.25;
+        line.material.transparent = true;
+        scene.add(line);
+
 
         // game logic
         var update = function() {
-            cube.rotation.x += 0.01;
-            cube.rotation.z += 0.005
+            cube.rotation.x += 0.02;
+            cube.rotation.z += 0.005;
+            line.rotation.x += 0.01;
+            line.rotation.z += 0.005;
         }
 
         var render = function() {
-            console.log(scene);
             renderer.render(scene, camera);
         }
         var GameLoop = function() {
