@@ -21,7 +21,22 @@
 <body>
     <script src="js/three.js"></script>
     <script src="js/OrbitControls.js"></script>
+    <script src="js/ObjectLoader.js"></script>
+    <script src="js/BufferGeometryLoader.js"></script>
     <script>
+        (function() {
+            var script = document.createElement('script');
+            script.onload = function() {
+                var stats = new Stats();
+                document.body.appendChild(stats.dom);
+                requestAnimationFrame(function loop() {
+                    stats.update();
+                    requestAnimationFrame(loop)
+                });
+            };
+            script.src = '//mrdoob.github.io/stats.js/build/stats.min.js';
+            document.head.appendChild(script);
+        })()
         var scene = new THREE.Scene();
         var camera = new THREE.PerspectiveCamera(
             75,
@@ -45,6 +60,18 @@
 
         // adding orbit controls
         controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+        // Adding models
+        var loader = new THREE.BufferGeometryLoader()
+        loader.load('models/json/QRCode_buffergeometry.json', function(geometry) {
+
+            mesh = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({
+                vertexColors: true
+            }));
+            mesh.scale.x = mesh.scale.y = mesh.scale.z = 0.005;
+            scene.add(mesh);
+
+        });
 
         // create the shape
         var geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -96,25 +123,25 @@
         const sphere = new THREE.SphereGeometry(0.5, 16, 8);
         //lights
 
-        light1 = new THREE.PointLight(0xff0040, 10, 50);
+        light1 = new THREE.PointLight(0xff0040, 10, 500);
         light1.add(new THREE.Mesh(sphere, new THREE.MeshBasicMaterial({
             color: 0xff0040
         })));
         scene.add(light1);
 
-        light2 = new THREE.PointLight(0x0040ff, 10, 50);
+        light2 = new THREE.PointLight(0x0040ff, 10, 500);
         light2.add(new THREE.Mesh(sphere, new THREE.MeshBasicMaterial({
             color: 0x0040ff
         })));
         scene.add(light2);
 
-        light3 = new THREE.PointLight(0x80ff80, 10, 50);
+        light3 = new THREE.PointLight(0x80ff80, 10, 500);
         light3.add(new THREE.Mesh(sphere, new THREE.MeshBasicMaterial({
             color: 0x80ff80
         })));
         scene.add(light3);
 
-        light4 = new THREE.PointLight(0xffaa00, 2, 50);
+        light4 = new THREE.PointLight(0xffaa00, 2, 500);
         light4.add(new THREE.Mesh(sphere, new THREE.MeshBasicMaterial({
             color: 0xffaa00
         })));
@@ -127,9 +154,9 @@
 
         // Spot Light
         var spotLight = new THREE.SpotLight(0xFF45F6, 25);
-        spotLight.add(new THREE.Mesh(sphere, new THREE.MeshBasicMaterial({
-            color: 0xFF45F6
-        })));
+        // spotLight.add(new THREE.Mesh(sphere, new THREE.MeshBasicMaterial({
+        //     color: 0xFF45F6
+        // })));
         spotLight.position.set(0, 3, 0)
         scene.add(spotLight)
 
